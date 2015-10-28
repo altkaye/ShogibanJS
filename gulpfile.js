@@ -21,7 +21,9 @@ gulp.task("uglify", function() {
         .pipe(gulp.dest("build/"));
 });
 
-gulp.task("default", function() {
+gulp.task("default", ["concat", "uglify"]);
+
+gulp.task("watch", function() {
     gulp.watch(["js/*.js"], ["concat"]);
     gulp.watch(["build/shogiban.js"], ["uglify"]);
 });
