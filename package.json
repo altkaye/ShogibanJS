@@ -1,0 +1,25 @@
+{
+  "name": "ShogibanJS",
+  "version": "0.0.0",
+  "description": "Shogiban made in javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:altkaye/ShogibanJS.git"
+  },
+  "keywords": [
+    "javascript",
+    "shogi"
+  ],
+  "author": "altkaye",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/altkaye/ShogibanJS/issues"
+  },
+  "devDependencies": {
+    "gulp": "~3.9.0"
+  }
+}
