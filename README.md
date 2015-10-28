@@ -1,6 +1,11 @@
 # ShogibanJS
 
-Shogi board made in javascript
+Shogi board for modern browsers, made in Javascript.
+legacy browsers and low spec pc? just throw it away.
+
+# Usage
+
+it's written in index.html
 
 # Depends on these Libraries
 
