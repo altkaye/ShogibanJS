@@ -18,6 +18,13 @@
             child.setPosition(p.x, p.y);
         },
 
+        setPositionInLayout:function (target, x, y) {
+            x = x || 1;
+            y = y || 1;
+            var p = this.getPositionAt(x, y);
+            target.setPosition(p.x, p.y);
+        },
+
         _debug_displayGrid: function() {
 
             for (var x = 1; x <= this.column; x++) {

@@ -14,11 +14,17 @@
             var boardParam = {
                 width: this.layout.getWidthOf(3),
                 height: this.layout.getHeightOf(3),
-                backgroundColor:"red"
+                backgroundColor:"transparent"
             };
             console.log(sb);
             this.board = sb.ShogiBoard(boardParam);
             this.layout.addChildInLayout(this.board, 3, 2);
+
+            var kp = this.board.buildKomaInitParam();
+            kp.name = "歩";
+            var koma = sb.Koma(kp);
+            this.board.putKoma(koma, 1, 1);
+
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
         }
     });
