@@ -29,6 +29,20 @@
             };
         },
 
+        localPositionToKif:function(position) {
+            var unceilX = (position.x + this.boardLayout.width / 2) / this.boardLayout.getWidthOf(1);
+            var unceilY = (position.y + this.boardLayout.height / 2) / this.boardLayout.getHeightOf(1);
+
+            var x = 10 - putil.math.range(Math.ceil(unceilX), 1, 9);
+            var y = putil.math.range(Math.ceil(unceilY), 1, 9);
+            return phina.geom.Vector2(x, y);
+        },
+
+        moveKoma:function(koma, x, y) {
+            this.removeKoma(koma);
+            this.putKoma(koma, x, y);
+        },
+
         putKoma: function(koma, x, y) {
             this.boardLayout.addChildInLayout(koma, 10 - x, y);
         },
@@ -259,15 +273,15 @@
 (function() {
     phina.define("sb.KomaDragController", {
         superClass: 'phina.accessory.Draggable',
-        board:null,
+        boardController:null,
 
-        init:function(target, board) {
-            this.superInit(target, board);
-            //TODO
+        init:function(target, boardController) {
+            this.superInit(target);
+            this.boardController = boardController;
         },
 
         ondragstart:function() {
-            console.log(this.target.name + " drag start");
+            sb.log(this.target.name + " drag start");
         },
 
         ondrag:function() {
@@ -275,10 +289,34 @@
         },
 
         ondragend:function() {
-            console.log(this.target.name + " drag end");
-            this.back();
+            sb.log(this.target.name + " drag end");
+            sb.log(this.target.position)
+            this.boardController.nextFromKomaObject(this.target);
+            //this.back();
+            //this.boardController.nextFromKomaController(this.target);
         }
 
+    });
+})();
+(function() {
+    phina.define("sb.Komadai", {
+        komas:null,
+
+        init:function() {
+            this.komas = [];
+        },
+
+        has:function(koma) {
+            return this.komas.indexOf(koma) >= 0;
+        },
+
+        put:function(koma) {
+            return this.komas.push(koma);
+        },
+
+        remove:function(koma) {
+            return this.komas.splice(this.komas.indexOf(koma), 1);
+        }
     });
 })();
 (function() {
@@ -438,6 +476,21 @@
     sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 4;
     sb.TAG = 'sho-giban';
 
+    sb.log = (function(){
+        if (!(console && console.log)) {
+            return function() {};
+        }
+
+        if (!console.log.bind) {
+            return function() {
+                var a = Array.prototype.slice.call(arguments);
+                    Function.prototype.apply.call(console.log, console, a);
+                };
+            }
+        return console.log.bind(console);
+    })();
+
+
     //prepare <sho-giban>
     sb.Shogiban = document.registerElement(sb.TAG, {
         prototype: Object.create(HTMLElement.prototype, {
@@ -497,7 +550,16 @@
         r.__proto__ = obj.__proto__;
         return r;
     };
-
+    putil.math = putil.math || {};
+    putil.math.range = function(origin, min, max) {
+        if (max != null && origin > max) {
+            return max;
+        } else if (min != null && origin < min) {
+            return min;
+        } else {
+            return origin;
+        }
+    };
 })();
 (function() {
     phina.define("sb.scene.ReplayScene", {
@@ -525,13 +587,102 @@
             console.log(sb);
             this.board = sb.ShogiBoard(boardParam);
             this.layout.addChildInLayout(this.board, 3, 2);
-
+            //put coma
             var komaList = sb.BoardInitializer.hirate(this.board);
+            //init controller
+            var shogiController = sb.ShogiController(this.board).attachTo(this.board);
+
             komaList.forEach(function(val) {
-                var controller = sb.KomaDragController(val);
-                controller.attachTo(val);
+                sb.KomaDragController(val, shogiController).attachTo(val);
             });
+
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
         }
+    });
+})();
+(function() {
+    phina.define("sb.ShogiController", {
+        superClass:"phina.accessory.Accessory",
+        board:null,
+        komadai:null,
+
+        init:function(root, board, komadai) {
+            this.superInit(root);
+            this.board = board || root;
+
+            this.komadai = komadai || {
+                sente:sb.Komadai(),
+                gote:sb.Komadai()
+            };
+        },
+
+        setKomasOnKomadai:function(komaList) {
+            var self = this;
+            komaList.forEach(function(v) {
+                var dai = !v.reverse ? self.komadai.sente : self.komadai.gote;
+                dai.put(v);
+            });
+        },
+
+        nextFromKomaObject:function(koma, sente, nari) {
+            var p = this.board.localPositionToKif(koma.position);
+            sb.log(p);
+            sente = sente || !koma.isReverse;
+            nari = nari || koma.isNari;
+            this.moveKoma(koma, sente, p.x, p.y, nari);
+        },
+
+        putKomaOnBoard:function(koma, x, y) {
+            this.board.putKoma(koma, x, y);
+        },
+
+        isSente:function(expression) {
+            var ret = expression;//return directly if expression is bool
+
+            var sentePettern = [
+                "sente", "Sente", "black", "Black", "▲", "▼", "+"
+            ];
+            var gotePattern = [
+                "gote", "Gote", "white", "White", "△", "▽", "-"
+            ];
+
+            if (sentePettern.indexOf(expression) >= 0) {
+                ret = true;
+            }
+            if (gotePattern.indexOf(expression) >= 0) {
+                ret = false;
+            }
+
+            return ret;
+        },
+
+        moveKoma:function(koma, senteOrGote, x, y, nari) {
+            var isSente = this.isSente(senteOrGote);
+            var dai = isSente ? this.komadai.sente : this.komadai.gote;
+
+            if ((isSente && koma.isReverse) || (!isSente && !koma.isReverse)) {
+                koma.reverse();
+            }
+
+            if (0 < x && 0 < y) {
+                if (dai.has(koma)) {
+                    dai.remove(koma);
+                }
+                if (nari == null) {
+                    //DO NOTING
+                } else if ((nari && !koma.isNari) || (!nari && koma.isNari)) {
+                    koma.flip();
+                }
+                //apply to view
+                this.board.moveKoma(koma, x, y);
+            } else {
+                this.board.removeKoma(koma);
+                dai.put(koma);
+                if (koma.isNari) {
+                    koma.flip();
+                }
+            }
+        }
+
     });
 })();
