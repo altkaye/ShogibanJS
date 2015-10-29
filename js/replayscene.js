@@ -20,10 +20,7 @@
             this.board = sb.ShogiBoard(boardParam);
             this.layout.addChildInLayout(this.board, 3, 2);
 
-            var kp = this.board.buildKomaInitParam();
-            var koma = sb.Hu(kp);
-            koma.flip();
-            this.board.putKoma(koma, 1, 1);
+            var komaList = sb.BoardInitializer.hirate(this.board);
 
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
         }

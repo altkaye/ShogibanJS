@@ -17,31 +17,38 @@
                     canvas.height = this.getAttribute("height") || sb.DEFAULT_HEIHGT;
                     this.appendChild(canvas);
                     this.canvas = canvas;
+                    this.isPhinaBinded = false;
                 }
             }
         })
     });
 
-    var shogibanMain = function() {
+    var Build = function() {
         //get all sho-giban elements and bind phina
         var shogibans = document.getElementsByTagName("sho-giban");
         for (var i = 0; i < shogibans.length; i++) {
-            (function(dom) {
-                var param = {
-                    width: dom.canvas.width,
-                    height: dom.canvas.height,
-                    domElement: dom.canvas,
-                    backgroundColor:"transparent",
-                    fit: false
-                };
-                var app = phina.display.CanvasApp(param);
-                var scene = sb.scene.ReplayScene(param);
+            if (!shogibans[i].isPhinaBinded) {
+                (function(dom) {
+                    var param = {
+                        width: dom.canvas.width,
+                        height: dom.canvas.height,
+                        domElement: dom.canvas,
+                        backgroundColor: "transparent",
+                        fit: false
+                    };
+                    var app = phina.display.CanvasApp(param);
+                    var scene = sb.scene.ReplayScene(param);
 
-                app.replaceScene(scene);
-                app.run();
-            })(shogibans[i]);
+                    app.replaceScene(scene);
+                    app.run();
+                    dom.isPhinaBinded = true;
+                })(shogibans[i]);
+            }
         }
     };
 
-    phina.main(shogibanMain);
+    sb.Build = sb.Build || Build;
+
+    //entry point;
+    phina.main(Build);
 })();

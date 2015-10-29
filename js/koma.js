@@ -12,6 +12,8 @@
 
         movement:null,
 
+        isReverse:false,
+
         init:function(param, name, nariName) {
             this.superInit(param);
             this.komaShape = sb.KomaShape(param);
@@ -32,12 +34,21 @@
             return nari !== null;
         },
 
+        reverse:function() {
+            this.isReverse = !this.isReverse;
+            this.komaShape.rotation = this.isReverse ? 180 : 0;
+            return this;
+        },
+
         flip:function() {
             if (!this.nari) {
                 return;
             }
             this.isNari = !this.isNari;
+            this.label.stroke = this.isNari ? "red" : "black";
+            this.label.fill = this.isNari ? "red" : "black";
             this.label.text = this.isNari ? this.nari : this.name;
+            return this;
         },
 
         registerMovement:function(dst, isNari) {
@@ -54,7 +65,7 @@
 
         init: function(param) {
             this.superInit(param);
-            this.corner = param.corner || phina.geom.Vector2(this.width / 8, this.height / 4);
+            this.corner = param.corner || phina.geom.Vector2(this.width / 10, this.height / 5);
         },
 
         _render: function() {
