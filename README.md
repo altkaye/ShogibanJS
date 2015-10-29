@@ -1,4 +1,4 @@
-* in early development.don't use this *
+*in early development.don't use this*
 
 # ShogibanJS
 

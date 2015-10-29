@@ -12,5 +12,14 @@
         r.__proto__ = obj.__proto__;
         return r;
     };
-
+    putil.math = putil.math || {};
+    putil.math.range = function(origin, min, max) {
+        if (max != null && origin > max) {
+            return max;
+        } else if (min != null && origin < min) {
+            return min;
+        } else {
+            return origin;
+        }
+    };
 })();

@@ -29,6 +29,20 @@
             };
         },
 
+        localPositionToKif:function(position) {
+            var unceilX = (position.x + this.boardLayout.width / 2) / this.boardLayout.getWidthOf(1);
+            var unceilY = (position.y + this.boardLayout.height / 2) / this.boardLayout.getHeightOf(1);
+
+            var x = 10 - putil.math.range(Math.ceil(unceilX), 1, 9);
+            var y = putil.math.range(Math.ceil(unceilY), 1, 9);
+            return phina.geom.Vector2(x, y);
+        },
+
+        moveKoma:function(koma, x, y) {
+            this.removeKoma(koma);
+            this.putKoma(koma, x, y);
+        },
+
         putKoma: function(koma, x, y) {
             this.boardLayout.addChildInLayout(koma, 10 - x, y);
         },
