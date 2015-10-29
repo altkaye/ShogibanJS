@@ -6,7 +6,12 @@
 
         init: function(param) {
             this.superInit(param);
-            this.layout = putil.layout.GridLayout(param, 5, 4);
+            var lp = {
+                width:param.width,
+                height:param.height,
+                backgroundColor:"#F0FFFF"
+            };
+            this.layout = putil.layout.GridLayout(lp, 5, 4);
             this.layout.addChildTo(this);
             this.layout.setPosition(this.gridX.center(), this.gridY.center());
             //this.layout._debug_displayGrid();
@@ -14,14 +19,17 @@
             var boardParam = {
                 width: this.layout.getWidthOf(3),
                 height: this.layout.getHeightOf(3),
-                backgroundColor:"transparent"
+                backgroundColor: "transparent"
             };
             console.log(sb);
             this.board = sb.ShogiBoard(boardParam);
             this.layout.addChildInLayout(this.board, 3, 2);
 
             var komaList = sb.BoardInitializer.hirate(this.board);
-
+            komaList.forEach(function(val) {
+                var controller = sb.KomaDragController(val);
+                controller.attachTo(val);
+            });
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
         }
     });

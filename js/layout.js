@@ -3,9 +3,13 @@
         superClass: "phina.display.Shape",
         column: 0,
         row: 0,
+        width:0,
+        height:0,
 
         init: function(param, column, row) {
             this.superInit(param);
+            this.width = param.width;
+            this.height = param.height;
             this.column = param.column || column || 1;
             this.row = param.row || row || 1;
         },
@@ -18,7 +22,7 @@
             child.setPosition(p.x, p.y);
         },
 
-        setPositionInLayout:function (target, x, y) {
+        setPositionInLayout: function(target, x, y) {
             x = x || 1;
             y = y || 1;
             var p = this.getPositionAt(x, y);

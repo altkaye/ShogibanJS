@@ -1,20 +1,20 @@
 (function() {
     phina.define("sb.Koma", {
-        superClass:"phina.display.Shape",
-        komaShape:null,
+        superClass: "phina.display.Shape",
+        komaShape: null,
 
-        label:null,
+        label: null,
 
-        name:null,
-        nari:null,
+        name: null,
+        nari: null,
 
-        isNari:false,
+        isNari: false,
 
-        movement:null,
+        movement: null,
 
-        isReverse:false,
+        isReverse: false,
 
-        init:function(param, name, nariName) {
+        init: function(param, name, nariName) {
             this.superInit(param);
             this.komaShape = sb.KomaShape(param);
             this.komaShape.addChildTo(this);
@@ -23,24 +23,24 @@
             this.nari = param.nari || nariName;
 
             var labelParam = {
-                text:this.name,
-                fontSize:this.width * 0.6,
-                strokeWidth:1
+                text: this.name,
+                fontSize: this.width * 0.6,
+                strokeWidth: 1
             };
             this.label = phina.display.Label(labelParam).addChildTo(this);
         },
 
-        haveNari:function() {
+        haveNari: function() {
             return nari !== null;
         },
 
-        reverse:function() {
+        reverse: function() {
             this.isReverse = !this.isReverse;
             this.komaShape.rotation = this.isReverse ? 180 : 0;
             return this;
         },
 
-        flip:function() {
+        flip: function() {
             if (!this.nari) {
                 return;
             }
@@ -51,7 +51,7 @@
             return this;
         },
 
-        registerMovement:function(dst, isNari) {
+        registerMovement: function(dst, isNari) {
             var prop = isNari ? "nari" : "normal";
             this.movement[prop].push(dst);
         }

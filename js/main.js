@@ -2,7 +2,7 @@
     console.log("hello world!");
     window.sb = window.sb || {};
 
-    sb.DEFAULT_GRID_SIZE = 100;
+    sb.DEFAULT_GRID_SIZE = 150;
     sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 5;
     sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 4;
     sb.TAG = 'sho-giban';
