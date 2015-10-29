@@ -7,6 +7,21 @@
     sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 4;
     sb.TAG = 'sho-giban';
 
+    sb.log = (function(){
+        if (!(console && console.log)) {
+            return function() {};
+        }
+
+        if (!console.log.bind) {
+            return function() {
+                var a = Array.prototype.slice.call(arguments);
+                    Function.prototype.apply.call(console.log, console, a);
+                };
+            }
+        return console.log.bind(console);
+    })();
+
+
     //prepare <sho-giban>
     sb.Shogiban = document.registerElement(sb.TAG, {
         prototype: Object.create(HTMLElement.prototype, {

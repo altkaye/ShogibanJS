@@ -24,12 +24,15 @@
             console.log(sb);
             this.board = sb.ShogiBoard(boardParam);
             this.layout.addChildInLayout(this.board, 3, 2);
-
+            //put coma
             var komaList = sb.BoardInitializer.hirate(this.board);
+            //init controller
+            var shogiController = sb.ShogiController(this.board).attachTo(this.board);
+
             komaList.forEach(function(val) {
-                var controller = sb.KomaDragController(val);
-                controller.attachTo(val);
+                sb.KomaDragController(val, shogiController).attachTo(val);
             });
+
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
         }
     });
