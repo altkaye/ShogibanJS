@@ -1,7 +1,6 @@
 (function() {
     console.log("hello world!");
-    var sb = {};
-    window.sb = sb;
+    window.sb = window.sb || {};
 
     sb.DEFAULT_GRID_SIZE = 100;
     sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 5;
@@ -32,6 +31,7 @@
                     width: dom.canvas.width,
                     height: dom.canvas.height,
                     domElement: dom.canvas,
+                    backgroundColor:"transparent",
                     fit: false
                 };
                 var app = phina.display.CanvasApp(param);

@@ -19,17 +19,14 @@
         },
 
         _debug_displayGrid: function() {
+
             for (var x = 1; x <= this.column; x++) {
                 for (var y = 1; y <= this.row; y++) {
                     var rectangle = phina.display.RectangleShape({
                         width: this.getWidthOf(1),
-                        height: this.getHeightOf(1),
-                        alpha: 0.5
+                        height: this.getHeightOf(1)
                     });
-                    var star = phina.display.StarShape({
-                        width: 3,
-                        height: 3
-                    });
+                    var star = phina.display.StarShape();
                     this.addChildInLayout(rectangle, x, y);
                     this.addChildInLayout(star, x, y);
                 }
@@ -38,8 +35,8 @@
         },
 
         getPositionAt: function(x, y) {
-            var px = this.getWidthOf(x - 0.5);
-            var py = this.getHeightOf(y - 0.5);
+            var px = this.getWidthOf(x - 0.5) - this.width / 2;
+            var py = this.getHeightOf(y - 0.5) - this.height / 2;
             return phina.geom.Vector2(px, py);
         },
 
