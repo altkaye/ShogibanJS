@@ -1,3 +1,5 @@
+* in early development.don't use this *
+
 # ShogibanJS
 
 Shogi board for modern browsers, made in Javascript.
