@@ -5,7 +5,7 @@ legacy browsers and low spec pc? just throw it away.
 
 # Usage
 
-it's written in index.html
+some sample in index.html
 
 # Depends on these Libraries
 

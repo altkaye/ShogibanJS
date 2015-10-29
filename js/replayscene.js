@@ -9,7 +9,7 @@
             this.layout = putil.layout.GridLayout(param, 5, 4);
             this.layout.addChildTo(this);
             this.layout.setPosition(this.gridX.center(), this.gridY.center());
-            this.layout._debug_displayGrid();
+            //this.layout._debug_displayGrid();
 
             var boardParam = {
                 width: this.layout.getWidthOf(3),
@@ -21,8 +21,8 @@
             this.layout.addChildInLayout(this.board, 3, 2);
 
             var kp = this.board.buildKomaInitParam();
-            kp.name = "歩";
-            var koma = sb.Koma(kp);
+            var koma = sb.Hu(kp);
+            koma.flip();
             this.board.putKoma(koma, 1, 1);
 
             //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());

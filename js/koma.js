@@ -6,7 +6,7 @@
         label:null,
 
         name:null,
-        nariName:null,
+        nari:null,
 
         isNari:false,
 
@@ -18,7 +18,7 @@
             this.komaShape.addChildTo(this);
 
             this.name = param.name || name;
-            this.nariName = param.nari || nariName;
+            this.nari = param.nari || nariName;
 
             var labelParam = {
                 text:this.name,
@@ -28,9 +28,16 @@
             this.label = phina.display.Label(labelParam).addChildTo(this);
         },
 
+        haveNari:function() {
+            return nari !== null;
+        },
+
         flip:function() {
+            if (!this.nari) {
+                return;
+            }
             this.isNari = !this.isNari;
-            this.label.text = isNari ? nariName : name;
+            this.label.text = this.isNari ? this.nari : this.name;
         },
 
         registerMovement:function(dst, isNari) {
