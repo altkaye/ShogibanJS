@@ -45,6 +45,16 @@
             this.putKoma(koma, kx, ky);
         },
 
+        toString:function() {
+            var ret = [];
+            for (var prop in this.komas) {
+                var koma = this.komas[prop];
+
+                var s = {};
+                s.name = koma.name;
+            }
+        },
+
         getKomaAt:function(kx, ky) {
             return this.komas[kx + "," + ky];
         },

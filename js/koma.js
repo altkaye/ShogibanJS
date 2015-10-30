@@ -32,6 +32,10 @@
             this.label = phina.display.Label(labelParam).addChildTo(this);
         },
 
+        getCurrentName:function() {
+            return !this.isNari ? this.name : this.nariName;
+        },
+
         haveNari: function() {
             return nari !== null;
         },
