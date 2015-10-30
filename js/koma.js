@@ -3,6 +3,7 @@
         superClass: "phina.display.Shape",
         komaShape: null,
 
+        reverseLabel:true,
         label: null,
 
         name: null,
@@ -21,6 +22,7 @@
 
             this.name = param.name || name;
             this.nari = param.nari || nariName;
+            this.reverseLabel = param.reverseLabel || true;
 
             var labelParam = {
                 text: this.name,
@@ -37,6 +39,7 @@
         reverse: function() {
             this.isReverse = !this.isReverse;
             this.komaShape.rotation = this.isReverse ? 180 : 0;
+            this.label.rotation = this.isReverse && this.reverseLabel ? 180 : 0;
             return this;
         },
 
