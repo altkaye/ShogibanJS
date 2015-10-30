@@ -3,8 +3,12 @@
     window.sb = window.sb || {};
 
     sb.DEFAULT_GRID_SIZE = 150;
-    sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 5;
-    sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 4;
+    sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 3;
+    sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 3;
+
+    sb.BoardType = sb.BoardType || {};//TODO
+    sb.BoardType.DEFAULT = "plain";//TODO
+
     sb.TAG = 'sho-giban';
 
     sb.log = (function(){
@@ -28,10 +32,12 @@
             createdCallback: {
                 value: function() {
                     var canvas = document.createElement("canvas");
+                    //TODO create initializer
                     canvas.width = this.getAttribute("width") || sb.DEFAULT_WIDTH;
                     canvas.height = this.getAttribute("height") || sb.DEFAULT_HEIHGT;
                     this.appendChild(canvas);
                     this.canvas = canvas;
+                    this.boardType = this.getAttribute("type") || sb.BoardType.DEFAULT;
                     this.isPhinaBinded = false;
                 }
             }
@@ -52,7 +58,9 @@
                         fit: false
                     };
                     var app = phina.display.CanvasApp(param);
-                    var scene = sb.scene.ReplayScene(param);
+
+                    //TODO: switch scene class by type dom.boardType
+                    var scene = sb.scene.PlainBoardScene(param);
 
                     app.replaceScene(scene);
                     app.run();

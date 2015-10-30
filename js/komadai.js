@@ -6,6 +6,9 @@
             this.komas = [];
         },
 
+        testHitElement:function() {
+            return false;//TODO temp
+        },
         has:function(koma) {
             return this.komas.indexOf(koma) >= 0;
         },

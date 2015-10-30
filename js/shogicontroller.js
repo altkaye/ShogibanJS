@@ -4,14 +4,17 @@
         board:null,
         komadai:null,
 
+        isSenteNow:true,
+
         init:function(root, board, komadai) {
             this.superInit(root);
             this.board = board || root;
-
+            this.board.setInteractive(true, "rect");
             this.komadai = komadai || {
                 sente:sb.Komadai(),
                 gote:sb.Komadai()
             };
+            this.isSenteNow = true;
         },
 
         setKomasOnKomadai:function(komaList) {
@@ -22,16 +25,39 @@
             });
         },
 
-        nextFromKomaObject:function(koma, sente, nari) {
-            var p = this.board.localPositionToKif(koma.position);
-            sb.log(p);
-            sente = sente || !koma.isReverse;
-            nari = nari || koma.isNari;
-            this.moveKoma(koma, sente, p.x, p.y, nari);
+        isGoho:function(koma, senteOrGote, kx, ky, nari) {
+            if (!koma.nari && nari) {
+                return false;
+            }
+            var kp = this.board.localPositionToKifPosition(koma);
+
+            kx = kx || kp.x;
+            ky = ky || kp.y;
+
+            var dstKoma = this.board.getKomaAt(kx, ky);
+            if (!dstKoma) {
+                return true;
+            }
+            return false;//TODO
         },
 
-        putKomaOnBoard:function(koma, x, y) {
-            this.board.putKoma(koma, x, y);
+        nextFromKomaObject:function(koma, sente, nari) {
+            var kp = this.localPositionToKifPosition(koma.position);
+            sente = sente || !koma.isReverse;
+            nari = nari || koma.isNari;
+            this.next(koma, this.isSente(sente), kp.x, kp.y, nari);
+        },
+
+        localPositionToKifPosition:function(position) {
+            return this.board.localPositionToKifPosition(position);
+        },
+
+        isHitKomadai:function(koma) {
+            return this.komadai.testHitElement(koma);//TODO komadai.testHitElm is not implemented
+        },
+
+        putKomaOnBoard:function(koma, kx, ky) {
+            this.board.putKoma(koma, kx, ky);
         },
 
         isSente:function(expression) {
@@ -54,7 +80,7 @@
             return ret;
         },
 
-        moveKoma:function(koma, senteOrGote, x, y, nari) {
+        next:function(koma, senteOrGote, kx, ky, nari) {
             var isSente = this.isSente(senteOrGote);
             var dai = isSente ? this.komadai.sente : this.komadai.gote;
 
@@ -62,7 +88,7 @@
                 koma.reverse();
             }
 
-            if (0 < x && 0 < y) {
+            if (0 < kx && 0 < ky) {
                 if (dai.has(koma)) {
                     dai.remove(koma);
                 }
@@ -72,7 +98,7 @@
                     koma.flip();
                 }
                 //apply to view
-                this.board.moveKoma(koma, x, y);
+                this.board.moveKoma(koma, kx, ky);
             } else {
                 this.board.removeKoma(koma);
                 dai.put(koma);

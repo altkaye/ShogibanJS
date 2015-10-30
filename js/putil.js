@@ -13,6 +13,9 @@
         return r;
     };
     putil.math = putil.math || {};
+    putil.math.isIn = function(origin, min, max) {
+        return origin >= min && origin <= max;
+    }
     putil.math.range = function(origin, min, max) {
         if (max != null && origin > max) {
             return max;
