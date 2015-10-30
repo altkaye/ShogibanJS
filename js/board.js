@@ -45,6 +45,11 @@
             this.putKoma(koma, kx, ky);
         },
 
+        popupKoma:function(koma) {
+            var kp = this.localPositionToKifPosition(koma.position);
+            this.moveKoma(koma, kp.x, kp.y);
+        },
+
         toString:function() {
             var ret = [];
             for (var prop in this.komas) {
