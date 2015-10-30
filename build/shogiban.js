@@ -45,6 +45,11 @@
             this.putKoma(koma, kx, ky);
         },
 
+        popupKoma:function(koma) {
+            var kp = this.localPositionToKifPosition(koma.position);
+            this.moveKoma(koma, kp.x, kp.y);
+        },
+
         toString:function() {
             var ret = [];
             for (var prop in this.komas) {
@@ -338,13 +343,15 @@
         superClass: 'putil.accessory.DoubleTap',
         boardController: null,
 
-        init: function(target, boardController) {
+        init: function(target, boardController, board) {
             this.superInit(target);
             this.boardController = boardController;
+            this.board = board || this.boardController.board;
         },
 
         ondragstart: function() {
             sb.log(this.target.name + " drag start");
+            this.board.popupKoma(this.target);
         },
 
         ondrag: function() {
