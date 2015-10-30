@@ -29,14 +29,16 @@
             if (!koma.nari && nari) {
                 return false;
             }
-            var kp = this.board.localPositionToKif(koma);
+            var kp = this.board.localPositionToKifPosition(koma);
 
             kx = kx || kp.x;
             ky = ky || kp.y;
 
-            var dstKoma = this.board.getKomaAt(x, y);
-
-            return true;//TODO
+            var dstKoma = this.board.getKomaAt(kx, ky);
+            if (!dstKoma) {
+                return true;
+            }
+            return false;//TODO
         },
 
         nextFromKomaObject:function(koma, sente, nari) {
