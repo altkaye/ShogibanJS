@@ -113,7 +113,7 @@
                     i * this.getWidthOf(1) + xb, yb + this.height);
             }
             //row line
-            for (var i = 0; i < this.row; i++) {
+            for (var i = 0; i < this.row + 1; i++) {
                 this.canvas.drawLine(
                     xb, yb + i * this.getHeightOf(1),
                     xb + this.width, yb + i * this.getHeightOf(1));

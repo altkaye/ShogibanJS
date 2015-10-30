@@ -25,12 +25,17 @@
         return console.log.bind(console);
     })();
 
+    var prevent = function(ev) {
+        ev.preventDefault();
+    };
 
     //prepare <sho-giban>
     sb.Shogiban = document.registerElement(sb.TAG, {
         prototype: Object.create(HTMLElement.prototype, {
             createdCallback: {
                 value: function() {
+                    //this.addEventListener("click", prevent);
+
                     var canvas = document.createElement("canvas");
                     //TODO create initializer
                     canvas.width = this.getAttribute("width") || sb.DEFAULT_WIDTH;
