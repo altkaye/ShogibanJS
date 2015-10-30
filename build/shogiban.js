@@ -113,7 +113,7 @@
                     i * this.getWidthOf(1) + xb, yb + this.height);
             }
             //row line
-            for (var i = 0; i < this.row; i++) {
+            for (var i = 0; i < this.row + 1; i++) {
                 this.canvas.drawLine(
                     xb, yb + i * this.getHeightOf(1),
                     xb + this.width, yb + i * this.getHeightOf(1));
@@ -192,6 +192,33 @@
             return ret;
         }
     };
+})();
+(function() {
+    // TODO find better way
+    phina.define("putil.accessory.DoubleTap", {
+        superClass:'phina.accessory.Draggable',
+        lastClickedTime:null,
+        thresholdTime:0,
+
+        init:function(param, thresholdTime) {
+            this.superInit(param);
+            this.thresholdTime = thresholdTime || 500;//500ms is default of windows
+            var self = this;
+            this.target.on("pointstart", function() {
+
+                var now = (new Date()).getTime();
+
+                if (self.lastClickedTime == null) {
+                    self.lastClickedTime = now;
+                } else if (now - self.lastClickedTime < self.thresholdTime) {
+                    self.flare("doubletap");
+                    self.lastClickedTime = null;
+                } else {
+                    self.lastClickedTime = now;
+                }
+            });
+        }
+    });
 })();
 (function() {
     phina.define("sb.Koma", {
@@ -308,7 +335,7 @@
 })();
 (function() {
     phina.define("sb.KomaDragController", {
-        superClass: 'phina.accessory.Draggable',
+        superClass: 'putil.accessory.DoubleTap',
         boardController: null,
 
         init: function(target, boardController) {
@@ -324,19 +351,23 @@
 
         },
 
+        ondoubletap:function() {
+            this.target.flip();
+        },
+
         ondragend: function() {
-            sb.log(this.target.name + " drag end");
-            sb.log(this.target.position)
+            //sb.log(this.target.name + " drag end");
+            //sb.log(this.target.position)
             var kp = this.boardController.localPositionToKifPosition(this.target.position);
             if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) {//TODO do not write 1, 9 directly
                 if (this.boardController.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {
                     this.boardController.nextFromKomaObject(this.target);
                 } else {
-                    sb.log("cant do dat");
+                    //sb.log("cant do dat");
                     this.back();
                 }
             } else {
-                sb.log("out of board");
+                //sb.log("out of board");
                 this.back();
             }
             //this.back();
@@ -544,12 +575,17 @@
         return console.log.bind(console);
     })();
 
+    var prevent = function(ev) {
+        ev.preventDefault();
+    };
 
     //prepare <sho-giban>
     sb.Shogiban = document.registerElement(sb.TAG, {
         prototype: Object.create(HTMLElement.prototype, {
             createdCallback: {
                 value: function() {
+                    //this.addEventListener("click", prevent);
+
                     var canvas = document.createElement("canvas");
                     //TODO create initializer
                     canvas.width = this.getAttribute("width") || sb.DEFAULT_WIDTH;
