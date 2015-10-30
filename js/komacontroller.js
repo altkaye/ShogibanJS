@@ -3,13 +3,15 @@
         superClass: 'putil.accessory.DoubleTap',
         boardController: null,
 
-        init: function(target, boardController) {
+        init: function(target, boardController, board) {
             this.superInit(target);
             this.boardController = boardController;
+            this.board = board || this.boardController.board;
         },
 
         ondragstart: function() {
             sb.log(this.target.name + " drag start");
+            this.board.popupKoma(this.target);
         },
 
         ondrag: function() {
