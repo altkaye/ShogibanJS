@@ -57,21 +57,30 @@
             }
         },
 
-        update:function(app) {
+        update: function(app) {
             //TODO test code
             if (app.keyboard.getKey("ctrl")) {
                 if (app.keyboard.getKeyDown("c")) {
-                    this._json = this.toJSON();
-                    console.log("copy");
-                }
-                if (app.keyboard.getKeyDown("v")) {
-                    this.initFromJson(this._json);
-                    console.log("paste");
+                    this.backup();
                 }
             }
+            /**
+                if (app.keyboard.getKeyDown("v")) {
+                    this.initFromJSON(this._json);
+                    this.flare("paste");
+                }
+            }
+            **/
         },
 
-        initFromJson: function(json) {
+        backup: function() {
+            this._json = this.toJSON();
+            this.flare("backup", {
+                json: this._json
+            }); //TODO create accessory
+        },
+
+        initFromJSON: function(json) {
             this.flush();
 
             var komaList = sb.JSONConverter.JSONToBoard(json, this.board);

@@ -9,6 +9,46 @@
     <script src="build/shogiban.js"></script>
 </head>
 <body>
-    <sho-giban></sho-giban>
+    <p>
+        <sho-giban></sho-giban>
+    </p>
+
+    <p>
+       <textarea id = "jsonarea" rows="6" cols="60"></textarea> <br />
+       <button id ="get">GET JSON</button> <button id ="apply">APPLY JSON</button><br />
+       <span id ="result"></span>
+    </p>
+
+    <script>
+    sb.run(function() {
+        var sbdom = document.getElementsByTagName("sho-giban")[0];
+
+        var jsonarea = document.getElementById("jsonarea");
+
+        sbdom.scene.on("backup", function(param) {
+            jsonarea.value = JSON.stringify(param.json);
+        });
+
+        var get = document.getElementById("get");
+        var apply = document.getElementById("apply");
+
+        var cls = function() {
+            document.getElementById("result").innerHTML = "";
+        };
+
+        get.onclick = function() {
+            jsonarea.value = JSON.stringify(sbdom.scene.toJSON());
+            document.getElementById("result").innerHTML = "converted to json successfully";
+            window.setTimeout(cls, 1000);
+        };
+
+        apply.onclick = function() {
+            var json = JSON.parse(jsonarea.value);
+            sbdom.scene.initFromJSON(json);
+            document.getElementById("result").innerHTML = "applied successfully";
+            window.setTimeout(cls, 1000);
+        };
+    });
+    </script>
 </body>
 </html>

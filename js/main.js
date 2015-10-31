@@ -25,6 +25,9 @@
         return console.log.bind(console);
     })();
 
+    //wrapper
+    sb.run = phina.main;
+
     var prevent = function(ev) {
         ev.preventDefault();
     };
@@ -80,9 +83,9 @@
                     var app = phina.display.CanvasApp(param);
 
                     //TODO: switch scene class by type dom.boardType
-                    var scene = sb.scene.PlainBoardScene(param);
+                    dom.scene = sb.scene.PlainBoardScene(param);
 
-                    app.replaceScene(scene);
+                    app.replaceScene(dom.scene);
                     app.run();
                     dom.isPhinaBinded = true;
                 })(shogibans[i]);
