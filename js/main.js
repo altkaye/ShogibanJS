@@ -2,8 +2,8 @@
     console.log("hello world!");
     window.sb = window.sb || {};
 
-    sb.DEFAULT_GRID_SIZE = 150;
-    sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 3;
+    sb.DEFAULT_GRID_SIZE = 100;
+    sb.DEFAULT_WIDTH = sb.DEFAULT_GRID_SIZE * 5;
     sb.DEFAULT_HEIHGT = sb.DEFAULT_GRID_SIZE * 3;
 
     sb.BoardType = sb.BoardType || {};//TODO
@@ -25,6 +25,9 @@
         return console.log.bind(console);
     })();
 
+    //wrapper
+    sb.run = phina.main;
+
     var prevent = function(ev) {
         ev.preventDefault();
     };
@@ -42,7 +45,12 @@
                     canvas.height = this.getAttribute("height") || sb.DEFAULT_HEIHGT;
                     this.appendChild(canvas);
                     this.canvas = canvas;
-                    this.boardType = this.getAttribute("type") || sb.BoardType.DEFAULT;
+                    this.type = this.getAttribute("type") || sb.BoardType.DEFAULT;
+                    this.editable = this.getAttribute("editable");
+                    if (this.editable == null) {
+                        this.editable = true;
+                    }
+                    this.bgcolor = this.getAttribute("bgcolor");
                     this.isPhinaBinded = false;
                 }
             }
@@ -50,6 +58,14 @@
     });
 
     var Build = function() {
+        /** TEST CODE
+        var hu = sb.koma.Hu();
+        sb.log(hu.toString());
+        sb.log(hu.constructor);
+        sb.log(typeof hu)
+        sb.log(hu instanceof sb.koma.Hu);
+        sb.log("constname:" + hu.className);
+        **/
         //get all sho-giban elements and bind phina
         var shogibans = document.getElementsByTagName("sho-giban");
         for (var i = 0; i < shogibans.length; i++) {
@@ -60,14 +76,16 @@
                         height: dom.canvas.height,
                         domElement: dom.canvas,
                         backgroundColor: "transparent",
-                        fit: false
+                        fit: false,
+                        bgcolor:null,
+                        isEditable:dom.editable
                     };
                     var app = phina.display.CanvasApp(param);
 
                     //TODO: switch scene class by type dom.boardType
-                    var scene = sb.scene.PlainBoardScene(param);
+                    dom.scene = sb.scene.PlainBoardScene(param);
 
-                    app.replaceScene(scene);
+                    app.replaceScene(dom.scene);
                     app.run();
                     dom.isPhinaBinded = true;
                 })(shogibans[i]);
