@@ -40,6 +40,12 @@
             return phina.geom.Vector2(kx, ky);
         },
 
+        removeAll:function() {
+            for (var prop in this.komas) {
+                this.removeKoma(this.komas[prop]);
+            }
+        },
+
         moveKoma:function(koma, kx, ky) {
             this.removeKoma(koma);
             this.putKoma(koma, kx, ky);
@@ -50,18 +56,31 @@
             this.moveKoma(koma, kp.x, kp.y);
         },
 
-        toString:function() {
+        toJSONArray:function() {
             var ret = [];
             for (var prop in this.komas) {
-                var koma = this.komas[prop];
+                var koma = this.komas[prop].toJSON();
+                var kp = this.propToKp(prop);
 
-                var s = {};
-                s.name = koma.name;
-            }
+                koma.kx = kp.x;
+                koma.ky = kp.y;
+
+                var op = this.boardLayout.getPositionFromKp(kp.x, kp.y);
+                koma.dx = (op.x - this.komas[prop].position.x) / this.boardLayout.width;
+                koma.dy = (op.y - this.komas[prop].position.y) / this.boardLayout.height;
+
+                ret.push(koma);
+             }
+             return ret;
         },
 
         getKomaAt:function(kx, ky) {
             return this.komas[kx + "," + ky];
+        },
+
+        propToKp:function(prop) {
+            var s = prop.split(",");
+            return phina.geom.Vector2(Number(s[0]), Number(s[1]));
         },
 
         putKoma: function(koma, kx, ky) {
@@ -72,7 +91,7 @@
         removeKoma: function(koma) {
             for (var prop in this.komas) {
                 if (this.komas[prop] === koma) {
-                    this.komas[prop] = null;
+                    delete this.komas[prop]
                     break;
                 }
             }
@@ -97,6 +116,10 @@
             column = column || 9;
             row = row || 9;
             this.superInit(param, column, row);
+        },
+
+        getPositionFromKp:function(kx, ky) {
+            return this.getPositionAt(this.column + 1 - kx, ky);
         },
 
         addChildByKifPoistion:function(koma, kx, ky) {

@@ -37,8 +37,6 @@
                 //sb.log("out of board");
                 this.back();
             }
-            //this.back();
-            //this.boardController.nextFromKomaController(this.target);
         }
 
     });

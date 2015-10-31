@@ -27,9 +27,18 @@
             var labelParam = {
                 text: this.name,
                 fontSize: this.width * 0.6,
-                strokeWidth: 1
+                strokeWidth: 0.4
             };
             this.label = phina.display.Label(labelParam).addChildTo(this);
+        },
+
+        toJSON:function() {
+            var ret = {
+                className:this.className,
+                isNari:this.isNari,
+                isReverse:this.isReverse
+            };
+            return ret;
         },
 
         getCurrentName:function() {
