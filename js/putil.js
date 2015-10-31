@@ -1,5 +1,6 @@
 (function() {
     window.putil = window.putil || {};
+
     putil.cloneObject = function(obj) {
         var r = {};
         for (var key in obj) {
@@ -12,6 +13,8 @@
         r.__proto__ = obj.__proto__;
         return r;
     };
+    putil.cloneObj = putil.cloneObject;
+
     putil.math = putil.math || {};
     putil.math.isIn = function(origin, min, max) {
         return origin >= min && origin <= max;

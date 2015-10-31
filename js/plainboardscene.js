@@ -27,12 +27,24 @@
                 backgroundColor: "transparent"
             };
 
+            var komadaiParam = {
+                width: this.layout.getWidthOf(1),
+                height: this.layout.getHeightOf(2),
+                backgroundColor: "transparent"
+            }
+
             this.board = sb.ShogiBoard(boardParam);
             this.komadais = {};
-            this.komadais.sente = sb.Komadai();
-            this.komadais.gote = sb.Komadai();
+
+            this.komadais.sente = sb.Komadai(putil.cloneObject(komadaiParam));
+            this.komadais.gote = sb.Komadai(putil.cloneObject(komadaiParam));
+
+            this.layout.addChildInLayout(this.komadais.sente, 5, 2.5);
+            this.layout.addChildInLayout(this.komadais.gote, 1, 1.5);
+
             this.layout.addChildInLayout(this.board, 3, 2);
-            this.shogiController = sb.ShogiController(this.board, this.board, this.komadais).attachTo(this.board);
+
+            this.shogiController = sb.ShogiController(this.layout, this.board, this.komadais).attachTo(this.layout);
 
             this.initHirateGame();
 
@@ -41,8 +53,8 @@
 
         flush: function() {
             this.board.removeAll();
-            this.komadais.sente.removeAll();
-            this.komadais.gote.removeAll();
+            this.komadais.sente.removeAllKoma();
+            this.komadais.gote.removeAllKoma();
         },
 
         initHirateGame: function() {

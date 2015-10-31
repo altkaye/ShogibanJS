@@ -1,27 +1,37 @@
 (function() {
     phina.define("sb.Komadai", {
+        superClass:"phina.display.Shape",
         komas: null,
+        bg:null,
 
-        init: function() {
+        init: function(param) {
+            this.superInit(param);
             this.komas = [];
+            var bgParam = {
+                width:this.width - 8,
+                height:this.height - 8,
+                fill:"#F3E2A9",
+                stroke:"#886A08",
+                strokeWidth:2
+            };
+            this.bg = phina.display.RectangleShape(bgParam).addChildTo(this);
         },
 
-        testHitElement: function() {
-            return false; //TODO temp
-        },
-        has: function(koma) {
+        hasKoma: function(koma) {
             return this.komas.indexOf(koma) >= 0;
         },
 
-        put: function(koma) {
+        putKoma: function(koma) {
             return this.komas.push(koma);
         },
 
-        removeAll:function() {
+        removeAllKoma:function() {
             for (var i = 0; i < this.komas; i++) {
                 this.remove(komas[i]);
             }
         },
+
+
 
         toJSONArray: function() {
             var ret = [];
@@ -41,7 +51,7 @@
             return ret;
         },
 
-        remove: function(koma) {
+        removeKoma: function(koma) {
             return this.komas.splice(this.komas.indexOf(koma), 1);
         }
     });

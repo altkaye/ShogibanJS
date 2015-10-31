@@ -1,12 +1,12 @@
 (function() {
     phina.define("sb.KomaDragController", {
         superClass: 'putil.accessory.DoubleTap',
-        boardController: null,
+        shogiCtrl: null,
 
-        init: function(target, boardController, board) {
+        init: function(target, shogiCtrl, board) {
             this.superInit(target);
-            this.boardController = boardController;
-            this.board = board || this.boardController.board;
+            this.shogiCtrl = shogiCtrl;
+            this.board = board || this.shogiCtrl.board;
         },
 
         ondragstart: function() {
@@ -15,7 +15,6 @@
         },
 
         ondrag: function() {
-
         },
 
         ondoubletap:function() {
@@ -23,12 +22,13 @@
         },
 
         ondragend: function() {
+          //  this.shogiCtrl.disfocusKoma(this.target);
             //sb.log(this.target.name + " drag end");
             //sb.log(this.target.position)
-            var kp = this.boardController.localPositionToKifPosition(this.target.position);
+            var kp = this.shogiCtrl.localPositionToKifPosition(this.target.position);
             if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) {//TODO do not write 1, 9 directly
-                if (this.boardController.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {
-                    this.boardController.nextFromKomaObject(this.target);
+                if (this.shogiCtrl.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {
+                    this.shogiCtrl.nextFromKomaObject(this.target);
                 } else {
                     //sb.log("cant do dat");
                     this.back();

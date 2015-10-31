@@ -25,6 +25,16 @@
             });
         },
 
+        focusKoma:function(koma) {
+            this._cache = koma.parent;
+            koma.addChildTo(this.target);
+        },
+
+        disfocusKoma:function(koma) {
+            koma.addChildTo(this._cache);
+        },
+
+
         isGoho:function(koma, senteOrGote, kx, ky, nari) {
             if (!koma.nari && nari) {
                 return false;
@@ -89,8 +99,8 @@
             }
 
             if (0 < kx && 0 < ky) {
-                if (dai.has(koma)) {
-                    dai.remove(koma);
+                if (dai.hasKoma(koma)) {
+                    dai.removeKoma(koma);
                 }
                 if (nari == null) {
                     //DO NOTING
@@ -101,7 +111,7 @@
                 this.board.moveKoma(koma, kx, ky);
             } else {
                 this.board.removeKoma(koma);
-                dai.put(koma);
+                dai.putKoma(koma);
                 if (koma.isNari) {
                     koma.flip();
                 }
