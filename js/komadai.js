@@ -3,10 +3,11 @@
         superClass:"phina.display.Shape",
         komas: null,
         bg:null,
+        layout:null,
 
         init: function(param) {
             this.superInit(param);
-            this.komas = [];
+            this.komas = {};
             var bgParam = {
                 width:this.width - 8,
                 height:this.height - 8,
@@ -15,6 +16,16 @@
                 strokeWidth:2
             };
             this.bg = phina.display.RectangleShape(bgParam).addChildTo(this);
+
+            var p = {
+                width:this.width,
+                height:this.height,
+                column:2,
+                row:5,
+                backgroundColor:"transparent"
+            };
+
+            this.layout = putil.layout.GridLayout(p).addChildTo(this);
         },
 
         hasKoma: function(koma) {
@@ -22,16 +33,23 @@
         },
 
         putKoma: function(koma) {
-            return this.komas.push(koma);
+            var pos = phina.geom.Vector2(0, 0);
+            if (!this.komas[koma.className]) {
+                this.komas[koma.className] = [];
+                var l = this.komas.length;
+                pos.x = Math.floor(l % this.layout.column);
+                pos.y = Math.floor(l / this.layout.row);
+            } else {
+
+            }
+            this.komas[koma.className].push(koma);
+
+
         },
 
         removeAllKoma:function() {
-            for (var i = 0; i < this.komas; i++) {
-                this.remove(komas[i]);
-            }
+
         },
-
-
 
         toJSONArray: function() {
             var ret = [];
