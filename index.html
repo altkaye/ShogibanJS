@@ -9,13 +9,18 @@
     <script src="build/shogiban.js"></script>
 </head>
 <body>
+    <h1>ShogibanJS</h1>
+
+    <span>repo:<a href="https://github.com/altkaye/ShogibanJS">https://github.com/altkaye/ShogibanJS</a></span>
+
+    <h2>sample of &ltsho-giban&gt tag</h2>
     <p>
         <sho-giban></sho-giban>
     </p>
-
+    <h2>access from javascript</h2>
     <p>
        <textarea id = "jsonarea" rows="6" cols="60"></textarea> <br />
-       <button id ="get">GET JSON</button> <button id ="apply">APPLY JSON</button><br />
+       <button id ="get">GET JSON</button> <button id ="apply">APPLY JSON</button> <button id ="img">GET IMG</button><br />
        <span id ="result"></span>
     </p>
 
@@ -34,6 +39,7 @@
 
         var get = document.getElementById("get");
         var apply = document.getElementById("apply");
+        var img = document.getElementById("img");
 
         var cls = function() {
             document.getElementById("result").innerHTML = "";
@@ -44,6 +50,14 @@
             document.getElementById("result").innerHTML = "converted to json successfully";
             window.setTimeout(cls, 1000);
         };
+
+        img.onclick = function() {
+            jsonarea.value = sbdom.canvas.toDataURL();
+            document.getElementById("result").innerHTML
+            = "converted to img successfully" + "<br />" +
+            "<img src=\"" + jsonarea.value + "\" />";
+            //window.setTimeout(cls, 1000);
+        }
 
         apply.onclick = function() {
             var json = JSON.parse(jsonarea.value);
