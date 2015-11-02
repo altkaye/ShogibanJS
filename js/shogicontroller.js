@@ -25,6 +25,7 @@
             });
         },
 
+
         isGoho:function(koma, senteOrGote, kx, ky, nari) {
             if (!koma.nari && nari) {
                 return false;
@@ -52,8 +53,9 @@
             return this.board.localPositionToKifPosition(position);
         },
 
-        isHitKomadai:function(koma) {
-            return this.komadai.testHitElement(koma);//TODO komadai.testHitElm is not implemented
+        isHitKomadai:function(koma, senteOrGote) {
+            var dai = this.isSente(senteOrGote || !koma.isReverse) ? this.komadai.sente : this.komadai.gote;
+            return dai.hitTestElement(koma);//TODO komadai.testHitElm is not implemented
         },
 
         putKomaOnBoard:function(koma, kx, ky) {
@@ -87,10 +89,10 @@
             if ((isSente && koma.isReverse) || (!isSente && !koma.isReverse)) {
                 koma.reverse();
             }
-
-            if (0 < kx && 0 < ky) {
-                if (dai.has(koma)) {
-                    dai.remove(koma);
+            sb.log(kx +  "," + ky);
+            if (0 < kx && 0 < ky && kx < 10 && ky < 10) {
+                if (dai.hasKoma(koma)) {
+                    dai.removeKoma(koma);
                 }
                 if (nari == null) {
                     //DO NOTING
@@ -99,9 +101,11 @@
                 }
                 //apply to view
                 this.board.moveKoma(koma, kx, ky);
+                sb.log("koma move on board");
             } else {
+                sb.log("put on dai/" + isSente);
                 this.board.removeKoma(koma);
-                dai.put(koma);
+                dai.putKoma(koma);
                 if (koma.isNari) {
                     koma.flip();
                 }

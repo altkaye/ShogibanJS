@@ -37,7 +37,7 @@
         prototype: Object.create(HTMLElement.prototype, {
             createdCallback: {
                 value: function() {
-                    //this.addEventListener("click", prevent);
+                    this.addEventListener("contextmenu", prevent);
 
                     var canvas = document.createElement("canvas");
                     //TODO create initializer
