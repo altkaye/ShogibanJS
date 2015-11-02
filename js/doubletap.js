@@ -1,7 +1,7 @@
 (function() {
     // TODO find better way
     phina.define("putil.accessory.DoubleTap", {
-        superClass:'phina.accessory.Draggable',
+        superClass:'phina.accessory.Accessory',
         lastClickedTime:null,
         thresholdTime:0,
 

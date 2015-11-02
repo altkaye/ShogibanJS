@@ -13,22 +13,23 @@
                 width: this.width - 8,
                 height: this.height - 8,
                 fill: "#F3E2A9",
-                stroke: "#886A08",
-                strokeWidth: 2
+                stroke: "#F3E2A9",
+                strokeWidth: 4
             };
             this.bg = phina.display.RectangleShape(bgParam).addChildTo(this);
 
             var p = {
                 width: this.width,
                 height: this.height,
-                column: 2,
-                row: 5,
+                column: 1,
+                row: 8,
                 backgroundColor: "transparent"
             };
             this.komaLayer = komaLayer;
             this.setInteractive(true, "rect");
 
-            this.layout = sb.KomadaiLayout(p).addChildTo(this);
+            this.layout = sb.KomadaiLayout(p).addChildTo(this).setPosition(-32, 0);
+            //this.layout._debug_displayGrid();
         },
 
         setReverse: function(r) {
@@ -44,8 +45,13 @@
 
             if (!this.komas[koma.className]) {
                 this.komas[koma.className] = [];
+            } else {
+                var arr = this.komas[koma.className];
+                arr[arr.length - 1].awake = false;
             }
             this.komas[koma.className].push(koma);
+            koma.awake = true;
+
             this.layout.addKoma(koma, this.position, this.komaLayer);
             koma.kp.x = 0;
             koma.kp.y = 0;
@@ -68,17 +74,12 @@
         toJSONArray: function() {
             var ret = [];
             for (var prop in this.komas) {
-                var koma = this.komas[prop].toJSON();
-                var kp = this.propToKp(prop);
-
-                koma.kx = kp.x;
-                koma.ky = kp.y;
-
-                //var op = this.boardLayout.getPositionFromKp(kp.x, kp.y);
-                //koma.dx = (op.x - koma.position.x) / this.boardLayout.width;
-                //koma.dy = (op.y - koma.position.y) / this.boardLayout.height;
-
-                ret.push(koma);
+                var arr = this.komas[prop];
+                var self = this;
+                arr.forEach(function(v) {
+                    var koma = v.toJSON();
+                    ret.push(koma);
+                });
             }
             return ret;
         },
@@ -89,6 +90,9 @@
                 arr.splice(arr.indexOf(koma), 1);
                 if (arr.length == 0) {
                     delete this.komas[koma.className];
+                } else {
+                    sb.log(arr[arr.length - 1]);
+                    arr[arr.length - 1].awake = true;
                 }
             }
             this.layout.removeKoma(koma, this.komaLayer);
@@ -129,11 +133,13 @@
             if (this.komas[koma.className]) {
                 var sx = this.komas[koma.className].sx;
                 var sy = this.komas[koma.className].sy;
-                this.posCounter[sx + "," + sy] += 1;
+                this.posCounter[sx + "," + sy] += 1; //TODO
+
+                var pv = this.posCounter[sx + "," + sy];
                 sb.log("add to komadai in prev /" + sx + "," + sy);
 
-                var pos = this.getPositionAt(sx, sy).add(origin);
-                return koma.addChildTo(layer).setPosition(pos.x, pos.y);
+                var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
+                return koma.addChildTo(layer).setPosition(pos.x + (koma.width / 5) * pv, pos.y);
             }
 
             var initSY = this.isReverse ? 1 : this.row;
@@ -170,7 +176,7 @@
                             sx: sx,
                             sy: sy
                         };
-                        var pos = this.getPositionAt(sx, sy).add(origin);
+                        var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
                         return koma.addChildTo(layer).setPosition(pos.x, pos.y);
                     }
                 }
