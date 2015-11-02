@@ -340,7 +340,7 @@
 (function() {
     // TODO find better way
     phina.define("putil.accessory.DoubleTap", {
-        superClass:'phina.accessory.Draggable',
+        superClass:'phina.accessory.Accessory',
         lastClickedTime:null,
         thresholdTime:0,
 
@@ -506,39 +506,91 @@
     phina.define("sb.KomaDragController", {
         superClass: 'putil.accessory.DoubleTap',
         shogiCtrl: null,
-        before:null,
-        root:null,
+        before: null,
+        root: null,
 
         init: function(target, shogiCtrl, root) {
             this.superInit(target);
             this.shogiCtrl = shogiCtrl;
             this.before = {};
             this.root = root;
+            var self = this;
+
+            this.on('attached', function() {
+                this.target.setInteractive(true);
+                putil.accessory.DoubleTap(this.target).attachTo(this.target);
+
+                this.target.on('pointstart', function(e) {
+                    self.initialPosition = phina.geom.Vector2(0, 0);
+                    // self._startPointMove = true;
+                    self.initialPosition.x = this.x;
+                    self.initialPosition.y = this.y;
+                    self.flare('movestart');
+                });
+
+                this.target.on('pointmove', function(e) {
+                    //if (self._startPointMove) {
+                    this.x += e.pointer.dx;
+                    this.y += e.pointer.dy;
+                    // }
+                });
+
+                this.target.on('pointend', function(e) {
+                    self.flare('moveend');
+                    // self._startPointMove = false;
+                });
+            });
         },
 
-        ondragstart: function() {
-            sb.log(this.target.name + " drag start");
+        ondoubletap: function() {
+            if (this.shogiCtrl.isHitKomadai(this.target)) {
+                return;
+            }
+
+            if (!this.target.isNari && !this.target.isReverse) {
+                if (this.target.nari) {
+                    this.target.flip();
+                } else {
+                    this.target.reverse();
+                }
+            } else if (this.target.isNari && !this.target.isReverse) {
+                this.target.flip();
+                this.target.reverse();
+            } else if (!this.target.isNari) {
+                if (this.target.nari) {
+                    this.target.flip();
+                } else {
+                    this.target.reverse();
+                }
+            } else {
+                this.target.reverse();
+                this.target.flip();
+            }
+        },
+
+        onmovestart: function() {
+            sb.log(this.target.name + " start");
             this.root.focusKoma(this.target);
         },
 
-        ondrag: function() {
-        },
-
-        returnToBefore:function() {
+        returnToBefore: function() {
+            this.root.disfocusKoma(this.target);
             this.back();
         },
 
-        ondoubletap:function() {
-            this.target.flip();
+        back: function() {
+            this.target.x = this.initialPosition.x;
+            this.target.y = this.initialPosition.y;
         },
 
-        ondragend: function() {
-          //  this.shogiCtrl.disfocusKoma(this.target);
+
+        onmoveend: function() {
+            //  this.shogiCtrl.disfocusKoma(this.target);
             //sb.log(this.target.name + " drag end");
             //sb.log(this.target.position)
             this.root.disfocusKoma(this.target);
             var kp = this.shogiCtrl.localPositionToKifPosition(this.target.position);
-            if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) {//TODO do not write 1, 9 directly
+            if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) { //TODO do not write 1, 9 directly
                 if (this.shogiCtrl.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {
                     sb.log("call nextFromKomaObj");
                     this.shogiCtrl.nextFromKomaObject(this.target);
@@ -546,10 +598,11 @@
                     //sb.log("cant do dat");
                     this.returnToBefore();
                 }
-            } else if (this.shogiCtrl.isHitKomadai(this.target)) {
+            } else if (this.shogiCtrl.isHitKomadai(this.target) && this.target.kp.x != 0 && this.target.kp.y != 0) {
                 this.shogiCtrl.nextFromKomaObject(this.target);
                 //this.back();
             } else {
+                sb.log("nothing to do");
                 this.returnToBefore();
             }
         }
@@ -571,22 +624,23 @@
                 width: this.width - 8,
                 height: this.height - 8,
                 fill: "#F3E2A9",
-                stroke: "#886A08",
-                strokeWidth: 2
+                stroke: "#F3E2A9",
+                strokeWidth: 4
             };
             this.bg = phina.display.RectangleShape(bgParam).addChildTo(this);
 
             var p = {
                 width: this.width,
                 height: this.height,
-                column: 2,
-                row: 5,
+                column: 1,
+                row: 8,
                 backgroundColor: "transparent"
             };
             this.komaLayer = komaLayer;
             this.setInteractive(true, "rect");
 
-            this.layout = sb.KomadaiLayout(p).addChildTo(this);
+            this.layout = sb.KomadaiLayout(p).addChildTo(this).setPosition(-32, 0);
+            //this.layout._debug_displayGrid();
         },
 
         setReverse: function(r) {
@@ -602,8 +656,13 @@
 
             if (!this.komas[koma.className]) {
                 this.komas[koma.className] = [];
+            } else {
+                var arr = this.komas[koma.className];
+                arr[arr.length - 1].awake = false;
             }
             this.komas[koma.className].push(koma);
+            koma.awake = true;
+
             this.layout.addKoma(koma, this.position, this.komaLayer);
             koma.kp.x = 0;
             koma.kp.y = 0;
@@ -626,17 +685,12 @@
         toJSONArray: function() {
             var ret = [];
             for (var prop in this.komas) {
-                var koma = this.komas[prop].toJSON();
-                var kp = this.propToKp(prop);
-
-                koma.kx = kp.x;
-                koma.ky = kp.y;
-
-                //var op = this.boardLayout.getPositionFromKp(kp.x, kp.y);
-                //koma.dx = (op.x - koma.position.x) / this.boardLayout.width;
-                //koma.dy = (op.y - koma.position.y) / this.boardLayout.height;
-
-                ret.push(koma);
+                var arr = this.komas[prop];
+                var self = this;
+                arr.forEach(function(v) {
+                    var koma = v.toJSON();
+                    ret.push(koma);
+                });
             }
             return ret;
         },
@@ -647,6 +701,9 @@
                 arr.splice(arr.indexOf(koma), 1);
                 if (arr.length == 0) {
                     delete this.komas[koma.className];
+                } else {
+                    sb.log(arr[arr.length - 1]);
+                    arr[arr.length - 1].awake = true;
                 }
             }
             this.layout.removeKoma(koma, this.komaLayer);
@@ -687,11 +744,13 @@
             if (this.komas[koma.className]) {
                 var sx = this.komas[koma.className].sx;
                 var sy = this.komas[koma.className].sy;
-                this.posCounter[sx + "," + sy] += 1;
+                this.posCounter[sx + "," + sy] += 1; //TODO
+
+                var pv = this.posCounter[sx + "," + sy];
                 sb.log("add to komadai in prev /" + sx + "," + sy);
 
-                var pos = this.getPositionAt(sx, sy).add(origin);
-                return koma.addChildTo(layer).setPosition(pos.x, pos.y);
+                var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
+                return koma.addChildTo(layer).setPosition(pos.x + (koma.width / 5) * pv, pos.y);
             }
 
             var initSY = this.isReverse ? 1 : this.row;
@@ -728,7 +787,7 @@
                             sx: sx,
                             sy: sy
                         };
-                        var pos = this.getPositionAt(sx, sy).add(origin);
+                        var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
                         return koma.addChildTo(layer).setPosition(pos.x, pos.y);
                     }
                 }
@@ -945,6 +1004,7 @@
             createdCallback: {
                 value: function() {
                     this.addEventListener("contextmenu", prevent);
+                    this.addEventListener("selectstart", prevent);
 
                     var canvas = document.createElement("canvas");
                     //TODO create initializer
@@ -1118,45 +1178,6 @@
     };
 })();
 (function() {
-    phina.define("sb.scene.ReplayScene", {
-        superClass: "phina.display.CanvasScene",
-        layout: null,
-        board: null,
-
-        init: function(param) {
-            this.superInit(param);
-            var lp = {
-                width:param.width,
-                height:param.height,
-                backgroundColor:"#F0FFFF"
-            };
-            this.layout = putil.layout.GridLayout(lp, 5, 4);
-            this.layout.addChildTo(this);
-            this.layout.setPosition(this.gridX.center(), this.gridY.center());
-            //this.layout._debug_displayGrid();
-
-            var boardParam = {
-                width: this.layout.getWidthOf(3),
-                height: this.layout.getHeightOf(3),
-                backgroundColor: "transparent"
-            };
-            console.log(sb);
-            this.board = sb.ShogiBoard(boardParam);
-            this.layout.addChildInLayout(this.board, 3, 2);
-            //put coma
-            var komaList = sb.BoardInitializer.hirate(this.board);
-            //init controller
-            var shogiController = sb.ShogiController(this.board).attachTo(this.board);
-
-            komaList.forEach(function(val) {
-                sb.KomaDragController(val, shogiController).attachTo(val);
-            });
-
-            //phina.display.StarShape().addChildTo(this).setPosition(this.gridX.center(), this.gridY.center());
-        }
-    });
-})();
-(function() {
     phina.define("sb.ShogiController", {
         superClass:"phina.accessory.Accessory",
         board:null,
@@ -1263,6 +1284,8 @@
             } else {
                 sb.log("put on dai/" + isSente);
                 this.board.removeKoma(koma);
+
+               // dai.removeKoma(koma);
                 dai.putKoma(koma);
                 if (koma.isNari) {
                     koma.flip();
