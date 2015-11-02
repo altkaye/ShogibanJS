@@ -21,7 +21,7 @@
         },
 
         returnToBefore:function() {
-            this.root.disfocusKoma(this.target);
+            this.back();
         },
 
         ondoubletap:function() {
@@ -32,7 +32,7 @@
           //  this.shogiCtrl.disfocusKoma(this.target);
             //sb.log(this.target.name + " drag end");
             //sb.log(this.target.position)
-
+            this.root.disfocusKoma(this.target);
             var kp = this.shogiCtrl.localPositionToKifPosition(this.target.position);
             if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) {//TODO do not write 1, 9 directly
                 if (this.shogiCtrl.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {

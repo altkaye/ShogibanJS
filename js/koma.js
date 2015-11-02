@@ -15,6 +15,8 @@
 
         isReverse: false,
 
+        kp:null,
+
         init: function(param, name, nariName) {
             this.superInit(param);
             this.komaShape = sb.KomaShape(param);
@@ -29,6 +31,7 @@
                 fontSize: this.width * 0.6,
                 strokeWidth: 0.4
             };
+            this.kp = phina.geom.Vector2(0, 0);
             this.label = phina.display.Label(labelParam).addChildTo(this);
         },
 
@@ -36,7 +39,9 @@
             var ret = {
                 className:this.className,
                 isNari:this.isNari,
-                isReverse:this.isReverse
+                isReverse:this.isReverse,
+                kx :this.kp.x,
+                ky :this.kp.y
             };
             return ret;
         },

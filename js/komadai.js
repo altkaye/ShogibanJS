@@ -47,6 +47,8 @@
             }
             this.komas[koma.className].push(koma);
             this.layout.addKoma(koma, this.position, this.komaLayer);
+            koma.kp.x = 0;
+            koma.kp.y = 0;
             if (koma.isNari) {
                 koma.flip();
             }

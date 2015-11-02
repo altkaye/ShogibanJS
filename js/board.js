@@ -100,6 +100,8 @@
             var pos = this.boardLayout.getPositionFromKp(kx, ky).add(this.position);
 
             this.komaLayer.addChild(koma);
+            koma.kp.x = kx;
+            koma.kp.y = ky;
             koma.setPosition(pos.x, pos.y);
         },
 
