@@ -10,8 +10,9 @@
         komaPaddingY: 0,
 
         komas:null,
+        komaLayer:null,
 
-        init: function(param) {
+        init: function(param, komaLayer) {
             this.superInit(param);
             this.paddingX = param.paddingX || 8;
             this.paddingY = param.paddingY || 8;
@@ -21,6 +22,8 @@
             this.komas = {};
             this.boardLayout = sb.ShogiBoardLayout(this.width - this.paddingX * 2, this.height - this.paddingY * 2);
             this.boardLayout.addChildTo(this);
+            this.komaLayer = komaLayer;
+
         },
 
         buildKomaInitParam: function() {
@@ -56,6 +59,15 @@
             this.moveKoma(koma, kp.x, kp.y);
         },
 
+        hasKoma:function(koma) {
+            for (var p in this.komas) {
+                if (this.komas[p] === koma) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
         toJSONArray:function() {
             var ret = [];
             for (var prop in this.komas) {
@@ -85,7 +97,10 @@
 
         putKoma: function(koma, kx, ky) {
             this.komas[kx + "," + ky] = koma;
-            this.boardLayout.addChildByKifPoistion(koma, kx, ky);
+            var pos = this.boardLayout.getPositionFromKp(kx, ky).add(this.position);
+
+            this.komaLayer.addChild(koma);
+            koma.setPosition(pos.x, pos.y);
         },
 
         removeKoma: function(koma) {
@@ -95,7 +110,7 @@
                     break;
                 }
             }
-            this.boardLayout.removeChild(koma);
+            this.komaLayer.removeChild(koma);
         }
     });
 })();

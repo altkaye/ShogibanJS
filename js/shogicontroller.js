@@ -25,15 +25,6 @@
             });
         },
 
-        focusKoma:function(koma) {
-            this._cache = koma.parent;
-            koma.addChildTo(this.target);
-        },
-
-        disfocusKoma:function(koma) {
-            koma.addChildTo(this._cache);
-        },
-
 
         isGoho:function(koma, senteOrGote, kx, ky, nari) {
             if (!koma.nari && nari) {

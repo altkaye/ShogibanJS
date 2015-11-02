@@ -4,8 +4,9 @@
         komas: null,
         bg: null,
         layout: null,
+        komaLayer: null,
 
-        init: function(param) {
+        init: function(param, komaLayer) {
             this.superInit(param);
             this.komas = {};
             var bgParam = {
@@ -24,13 +25,13 @@
                 row: 5,
                 backgroundColor: "transparent"
             };
-
+            this.komaLayer = komaLayer;
             this.setInteractive(true, "rect");
 
             this.layout = sb.KomadaiLayout(p).addChildTo(this);
         },
 
-        setReverse:function(r) {
+        setReverse: function(r) {
             this.layout.isReverse = r;
             return this;
         },
@@ -45,7 +46,7 @@
                 this.komas[koma.className] = [];
             }
             this.komas[koma.className].push(koma);
-            this.layout.addKoma(koma);
+            this.layout.addKoma(koma, this.position, this.komaLayer);
             if (koma.isNari) {
                 koma.flip();
             }
@@ -56,7 +57,7 @@
                 var arr = this.komas[prop];
                 var self = this;
                 arr.forEach(function(koma) {
-                    self.layout.removeKoma(koma);
+                    self.layout.removeKoma(koma, self.komaLayer);
                 });
                 delete this.komas[prop];
             }
@@ -88,7 +89,7 @@
                     delete this.komas[koma.className];
                 }
             }
-            this.layout.removeKoma(koma);
+            this.layout.removeKoma(koma, this.komaLayer);
             return koma;
         }
     });
@@ -109,26 +110,28 @@
             this.isReverse = false;
         },
 
-        removeKoma: function(koma) {
+        removeKoma: function(koma, layer) {
             if (this.komas[koma.className]) {
                 var prop = this.komas[koma.className].sx + "," + this.komas[koma.className].sy;
                 this.posCounter[prop] -= 1;
                 if (this.posCounter[prop] == 0) {
                     delete this.komas[koma.className];
                 }
-                this.removeChild(koma);
+                layer.removeChild(koma);
             } else {
-                return this.removeChild(koma);
+                return layer.removeChild(koma);
             }
         },
 
-        addKoma: function(koma) {
+        addKoma: function(koma, origin, layer) {
             if (this.komas[koma.className]) {
                 var sx = this.komas[koma.className].sx;
                 var sy = this.komas[koma.className].sy;
                 this.posCounter[sx + "," + sy] += 1;
                 sb.log("add to komadai in prev /" + sx + "," + sy);
-                return this.addChildInLayout(koma, sx, sy);
+
+                var pos = this.getPositionAt(sx, sy).add(origin);
+                return koma.addChildTo(layer).setPosition(pos.x, pos.y);
             }
 
             var initSY = this.isReverse ? 1 : this.row;
@@ -155,7 +158,7 @@
             var dSX = this.isReverse ? -1 : 1;
 
             for (var sy = initSY; conSY(sy); sy += dSY) {
-                for (var sx = 1; sx <= this.column; sx ++) {//TODO
+                for (var sx = 1; sx <= this.column; sx++) { //TODO
                     var prop = sx + "," + sy;
                     sb.log("prop:" + prop);
                     if (!this.posCounter[prop] || this.posCounter[prop] == 0) {
@@ -165,7 +168,8 @@
                             sx: sx,
                             sy: sy
                         };
-                        return this.addChildInLayout(koma, sx, sy);
+                        var pos = this.getPositionAt(sx, sy).add(origin);
+                        return koma.addChildTo(layer).setPosition(pos.x, pos.y);
                     }
                 }
             }
