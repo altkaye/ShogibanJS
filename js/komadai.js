@@ -34,21 +34,31 @@
 
         putKoma: function(koma) {
             var pos = phina.geom.Vector2(0, 0);
+
             if (!this.komas[koma.className]) {
                 this.komas[koma.className] = [];
                 var l = this.komas.length;
-                pos.x = Math.floor(l % this.layout.column);
-                pos.y = Math.floor(l / this.layout.row);
+                pos.x = Math.floor(l % this.layout.column) + 1;
+                pos.y = Math.floor(l / this.layout.row) + 1;
+                pos = this.layout.getPositionAt(pos.x, pos.y);
             } else {
-
+                var old = this.komas[koma.className][0];
+                pos.x = old.x;
+                pos.y = old.y;
             }
             this.komas[koma.className].push(koma);
-
-
+            koma.addChildTo(this.layout).setPosition(pos.x, pos.y);
         },
 
         removeAllKoma:function() {
-
+            for (var prop in this.komas) {
+                var arr = this.komas[prop];
+                var self = this;
+                arr.forEach(function(koma) {
+                    self.layout.removeChild(koma);
+                });
+                delete this.komas[prop];
+            }
         },
 
         toJSONArray: function() {
@@ -70,7 +80,15 @@
         },
 
         removeKoma: function(koma) {
-            return this.komas.splice(this.komas.indexOf(koma), 1);
+            var arr = this.komas[koma.className];
+            if (arr && arr.indexOf(koma) >= 0) {
+                arr.splice(arr.indexOf(koma), 1);
+                if (arr.length == 0) {
+                    delete this.komas[koma.className];
+                }
+            }
+            this.layout.removeChild(koma);
+            return koma;
         }
     });
 })();
