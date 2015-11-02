@@ -28,13 +28,16 @@
             var kp = this.shogiCtrl.localPositionToKifPosition(this.target.position);
             if (putil.math.isIn(kp.x, 1, 9) && putil.math.isIn(kp.y, 1, 9)) {//TODO do not write 1, 9 directly
                 if (this.shogiCtrl.isGoho(this.target, this.target.isReverse, kp.x, kp.y, false)) {
+                    sb.log("call nextFromKomaObj");
                     this.shogiCtrl.nextFromKomaObject(this.target);
                 } else {
                     //sb.log("cant do dat");
                     this.back();
                 }
+            } else if (this.shogiCtrl.isHitKomadai(this.target)) {
+                this.shogiCtrl.nextFromKomaObject(this.target);
+                //this.back();
             } else {
-                //sb.log("out of board");
                 this.back();
             }
         }

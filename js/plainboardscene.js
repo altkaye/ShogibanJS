@@ -37,7 +37,7 @@
             this.komadais = {};
 
             this.komadais.sente = sb.Komadai(putil.cloneObject(komadaiParam));
-            this.komadais.gote = sb.Komadai(putil.cloneObject(komadaiParam));
+            this.komadais.gote = sb.Komadai(putil.cloneObject(komadaiParam)).setReverse(true);
 
             this.layout.addChildInLayout(this.komadais.sente, 5, 2.5);
             this.layout.addChildInLayout(this.komadais.gote, 1, 1.5);

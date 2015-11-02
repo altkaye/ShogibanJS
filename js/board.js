@@ -91,7 +91,7 @@
         removeKoma: function(koma) {
             for (var prop in this.komas) {
                 if (this.komas[prop] === koma) {
-                    delete this.komas[prop]
+                    delete this.komas[prop];
                     break;
                 }
             }
