@@ -105,6 +105,8 @@
             } else {
                 sb.log("put on dai/" + isSente);
                 this.board.removeKoma(koma);
+
+               // dai.removeKoma(koma);
                 dai.putKoma(koma);
                 if (koma.isNari) {
                     koma.flip();

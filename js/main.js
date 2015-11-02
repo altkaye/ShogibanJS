@@ -38,6 +38,7 @@
             createdCallback: {
                 value: function() {
                     this.addEventListener("contextmenu", prevent);
+                    this.addEventListener("selectstart", prevent);
 
                     var canvas = document.createElement("canvas");
                     //TODO create initializer
