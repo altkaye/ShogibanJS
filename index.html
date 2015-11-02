@@ -19,7 +19,7 @@
     </p>
     <h2>access from javascript</h2>
     <p>
-       <textarea id = "jsonarea" rows="6" cols="60"></textarea> <br />
+       <textarea id = "area" rows="6" cols="60"></textarea> <br />
        <button id ="get">GET JSON</button> <button id ="apply">APPLY JSON</button> <button id ="img">GET IMG</button><br />
        <span id ="result"></span>
     </p>
@@ -31,10 +31,10 @@
     sb.run(function() {
         var sbdom = document.getElementsByTagName("sho-giban")[0];
 
-        var jsonarea = document.getElementById("jsonarea");
+        var area = document.getElementById("area");
 
         sbdom.scene.on("backup", function(param) {
-            jsonarea.value = JSON.stringify(param.json);
+            area.value = JSON.stringify(param.json);
         });
 
         var get = document.getElementById("get");
@@ -46,21 +46,19 @@
         };
 
         get.onclick = function() {
-            jsonarea.value = JSON.stringify(sbdom.scene.toJSON());
+            area.value = JSON.stringify(sbdom.scene.toJSON());
             document.getElementById("result").innerHTML = "converted to json successfully";
             window.setTimeout(cls, 1000);
         };
 
         img.onclick = function() {
-            jsonarea.value = sbdom.canvas.toDataURL();
-            document.getElementById("result").innerHTML
-            = "converted to img successfully" + "<br />" +
-            "<img src=\"" + jsonarea.value + "\" />";
+            area.value = "<img src=\"" +sbdom.canvas.toDataURL() + "\" />";
+            document.getElementById("result").innerHTML = area.value;
             //window.setTimeout(cls, 1000);
         }
 
         apply.onclick = function() {
-            var json = JSON.parse(jsonarea.value);
+            var json = JSON.parse(area.value);
             sbdom.scene.initFromJSON(json);
             document.getElementById("result").innerHTML = "applied successfully";
             window.setTimeout(cls, 1000);
