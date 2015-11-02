@@ -51,11 +51,12 @@
         },
 
         focusKoma:function(koma) {
-
+            koma.addChildTo(this.topLayer);
+            //TODO
         },
 
         disfocusKoma:function(koma) {
-
+            //TODO
         },
 
         flush: function() {

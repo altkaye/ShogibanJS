@@ -3,7 +3,7 @@
         superClass: "phina.display.Shape",
         komaShape: null,
 
-        reverseLabel:true,
+        reverseLabel: true,
         label: null,
 
         name: null,
@@ -15,7 +15,7 @@
 
         isReverse: false,
 
-        kp:null,
+        kp: null,
 
         init: function(param, name, nariName) {
             this.superInit(param);
@@ -35,18 +35,18 @@
             this.label = phina.display.Label(labelParam).addChildTo(this);
         },
 
-        toJSON:function() {
+        toJSON: function() {
             var ret = {
-                className:this.className,
-                isNari:this.isNari,
-                isReverse:this.isReverse,
-                kx :this.kp.x,
-                ky :this.kp.y
+                className: this.className,
+                isNari: this.isNari,
+                isReverse: this.isReverse,
+                kx: this.kp.x,
+                ky: this.kp.y
             };
             return ret;
         },
 
-        getCurrentName:function() {
+        getCurrentName: function() {
             return !this.isNari ? this.name : this.nariName;
         },
 
@@ -94,33 +94,44 @@
             this.canvas.transformCenter();
             var xb = -this.width / 2;
             var yb = -this.height / 2;
+            this.canvas.context.fillStyle = "#F3E2A9";
 
-            //bottom
-            this.canvas.drawLine(
-                0 + xb, this.height + yb,
-                this.width + xb, this.height + yb
-            );
+            this.canvas.beginPath().moveTo(
+                this.width + xb, this.height + yb).lineTo(
+                0 + xb, this.height + yb
+            ).lineTo(
+                0 + xb, this.height + yb
+            ).lineTo(
+                this.corner.x + xb, this.corner.y + yb
+            ).lineTo(
+                this.corner.x + xb, this.corner.y + yb
+            ).lineTo(
+                this.width / 2 + xb, 0 + yb
+            ).lineTo(
+                this.width / 2 + xb, 0 + yb
+            ).lineTo(
+                this.width - this.corner.x + xb, this.corner.y + yb
+            ).lineTo(
+                this.width - this.corner.x + xb, this.corner.y + yb
+            ).lineTo(
+                this.width + xb, this.height + yb).closePath().fill();
 
-            //left side
-            this.canvas.drawLine(
+            this.canvas.beginPath().line(
+                this.width + xb, this.height + yb,
+                0 + xb, this.height + yb
+            ).line(
                 0 + xb, this.height + yb,
                 this.corner.x + xb, this.corner.y + yb
-            );
-            this.canvas.drawLine(
+            ).line(
                 this.corner.x + xb, this.corner.y + yb,
                 this.width / 2 + xb, 0 + yb
-            );
-
-            //right side
-            this.canvas.drawLine(
-                this.width + xb, this.height + yb,
+            ).line(
+                this.width / 2 + xb, 0 + yb,
                 this.width - this.corner.x + xb, this.corner.y + yb
-            );
-            this.canvas.drawLine(
+            ).line(
                 this.width - this.corner.x + xb, this.corner.y + yb,
-                this.width / 2 + xb, 0 + yb
-            );
-
+                this.width + xb, this.height + yb
+            ).stroke();
 
         }
     });
