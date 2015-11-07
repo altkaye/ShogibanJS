@@ -30,7 +30,9 @@
             return {
                 width: this.boardLayout.getWidthOf(1) - this.komaPaddingX * 2,
                 height: this.boardLayout.getHeightOf(1) - this.komaPaddingY * 2,
-                backgroundColor: "transparent"
+                backgroundColor: "transparent",
+                stroke:"#000000",
+                fill:"#F3E2A9"
             };
         },
 
@@ -122,6 +124,7 @@
         superClass: "putil.layout.GridLayout",
 
         init: function(width, height, column, row) {
+            //TODO fix constructor
             var param = {
                 width: width,
                 height: height,
