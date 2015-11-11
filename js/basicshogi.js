@@ -27,7 +27,8 @@
             var boardParam = {
                 width: this.layout.getWidthOf(3),
                 height: this.layout.getHeightOf(3),
-                backgroundColor: "transparent"
+                backgroundColor: "transparent",
+
             };
 
             var komadaiParam = {
