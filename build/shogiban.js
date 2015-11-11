@@ -27,7 +27,8 @@
             var boardParam = {
                 width: this.layout.getWidthOf(3),
                 height: this.layout.getHeightOf(3),
-                backgroundColor: "transparent"
+                backgroundColor: "transparent",
+
             };
 
             var komadaiParam = {
@@ -126,7 +127,9 @@
             return {
                 width: this.boardLayout.getWidthOf(1) - this.komaPaddingX * 2,
                 height: this.boardLayout.getHeightOf(1) - this.komaPaddingY * 2,
-                backgroundColor: "transparent"
+                backgroundColor: "transparent",
+                stroke:"#000000",
+                fill:"#F3E2A9"
             };
         },
 
@@ -221,6 +224,7 @@
         superClass: "putil.layout.GridLayout",
 
         init: function(width, height, column, row) {
+            //TODO fix constructor
             var param = {
                 width: width,
                 height: height,
@@ -460,7 +464,8 @@
             this.canvas.transformCenter();
             var xb = -this.width / 2;
             var yb = -this.height / 2;
-            this.canvas.context.fillStyle = "#F3E2A9";
+            this.canvas.context.fillStyle = this.fill || "#F3E2A9";
+            this.canvas.strokeStyle = this.stroke || "#000000";
 
             this.canvas.beginPath().moveTo(
                 this.width + xb, this.height + yb).lineTo(
@@ -649,7 +654,7 @@
         },
 
         hasKoma: function(koma) {
-            return this.komas[koma.className] != null;
+            return this.komas[koma.className] != null && this.komas[koma.className].indexOf(koma) >= 0;
         },
 
         putKoma: function(koma) {
@@ -728,10 +733,11 @@
         },
 
         removeKoma: function(koma, layer) {
+            sb.log("remove koma on komada");
             if (this.komas[koma.className]) {
                 var prop = this.komas[koma.className].sx + "," + this.komas[koma.className].sy;
                 this.posCounter[prop] -= 1;
-                if (this.posCounter[prop] == 0) {
+                if (this.posCounter[prop] <= 0) {
                     delete this.komas[koma.className];
                 }
                 layer.removeChild(koma);
@@ -741,6 +747,7 @@
         },
 
         addKoma: function(koma, origin, layer) {
+
             if (this.komas[koma.className]) {
                 var sx = this.komas[koma.className].sx;
                 var sy = this.komas[koma.className].sy;
@@ -775,18 +782,24 @@
 
             var dSY = this.isReverse ? 1 : -1;
             var dSX = this.isReverse ? -1 : 1;
-
+            sb.log(this.posCounter);
             for (var sy = initSY; conSY(sy); sy += dSY) {
                 for (var sx = 1; sx <= this.column; sx++) { //TODO
+
                     var prop = sx + "," + sy;
                     sb.log("prop:" + prop);
+                    sb.log("pos counter:" + this.posCounter[prop]);
                     if (!this.posCounter[prop] || this.posCounter[prop] == 0) {
                         this.posCounter[prop] = 1;
                         sb.log("add to komadai in for /" + prop);
-                        this.komas[koma.className] = {
-                            sx: sx,
-                            sy: sy
-                        };
+                        var self = this;
+                        (function(sx, sy, className) {
+                            self.komas[className] = {
+                                sx: sx,
+                                sy: sy
+                            };
+                        })(sx, sy, koma.className);
+                        sb.log(this.posCounter);
                         var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
                         return koma.addChildTo(layer).setPosition(pos.x, pos.y);
                     }
@@ -1217,8 +1230,9 @@
             var dstKoma = this.board.getKomaAt(kx, ky);
             if (!dstKoma) {
                 return true;
+            } else {
+                return dstKoma.isReverse != koma.isReverse;
             }
-            return false;//TODO
         },
 
         nextFromKomaObject:function(koma, sente, nari) {
@@ -1271,25 +1285,29 @@
             sb.log(kx +  "," + ky);
             if (0 < kx && 0 < ky && kx < 10 && ky < 10) {
                 if (dai.hasKoma(koma)) {
+                    sb.log("rm");
                     dai.removeKoma(koma);
                 }
+
                 if (nari == null) {
                     //DO NOTING
                 } else if ((nari && !koma.isNari) || (!nari && koma.isNari)) {
                     koma.flip();
                 }
                 //apply to view
+
+                var dstKoma = this.board.getKomaAt(kx, ky);
+                if (dstKoma && dstKoma.isReverse != koma.isReverse) {
+                    sb.log("remove dst");
+                    this.board.removeKoma(dstKoma);
+                    dai.putKoma(dstKoma.reverse());
+                }
                 this.board.moveKoma(koma, kx, ky);
                 sb.log("koma move on board");
             } else {
                 sb.log("put on dai/" + isSente);
                 this.board.removeKoma(koma);
-
-               // dai.removeKoma(koma);
                 dai.putKoma(koma);
-                if (koma.isNari) {
-                    koma.flip();
-                }
             }
         }
 
