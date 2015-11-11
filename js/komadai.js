@@ -38,7 +38,7 @@
         },
 
         hasKoma: function(koma) {
-            return this.komas[koma.className] != null;
+            return this.komas[koma.className] != null && this.komas[koma.className].indexOf(koma) >= 0;
         },
 
         putKoma: function(koma) {
@@ -117,10 +117,11 @@
         },
 
         removeKoma: function(koma, layer) {
+            sb.log("remove koma on komada");
             if (this.komas[koma.className]) {
                 var prop = this.komas[koma.className].sx + "," + this.komas[koma.className].sy;
                 this.posCounter[prop] -= 1;
-                if (this.posCounter[prop] == 0) {
+                if (this.posCounter[prop] <= 0) {
                     delete this.komas[koma.className];
                 }
                 layer.removeChild(koma);
@@ -130,6 +131,7 @@
         },
 
         addKoma: function(koma, origin, layer) {
+
             if (this.komas[koma.className]) {
                 var sx = this.komas[koma.className].sx;
                 var sy = this.komas[koma.className].sy;
@@ -164,18 +166,24 @@
 
             var dSY = this.isReverse ? 1 : -1;
             var dSX = this.isReverse ? -1 : 1;
-
+            sb.log(this.posCounter);
             for (var sy = initSY; conSY(sy); sy += dSY) {
                 for (var sx = 1; sx <= this.column; sx++) { //TODO
+
                     var prop = sx + "," + sy;
                     sb.log("prop:" + prop);
+                    sb.log("pos counter:" + this.posCounter[prop]);
                     if (!this.posCounter[prop] || this.posCounter[prop] == 0) {
                         this.posCounter[prop] = 1;
                         sb.log("add to komadai in for /" + prop);
-                        this.komas[koma.className] = {
-                            sx: sx,
-                            sy: sy
-                        };
+                        var self = this;
+                        (function(sx, sy, className) {
+                            self.komas[className] = {
+                                sx: sx,
+                                sy: sy
+                            };
+                        })(sx, sy, koma.className);
+                        sb.log(this.posCounter);
                         var pos = this.getPositionAt(sx, sy).add(origin).add(this.position);
                         return koma.addChildTo(layer).setPosition(pos.x, pos.y);
                     }

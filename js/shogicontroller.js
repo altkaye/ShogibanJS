@@ -38,8 +38,9 @@
             var dstKoma = this.board.getKomaAt(kx, ky);
             if (!dstKoma) {
                 return true;
+            } else {
+                return dstKoma.isReverse != koma.isReverse;
             }
-            return false;//TODO
         },
 
         nextFromKomaObject:function(koma, sente, nari) {
@@ -92,25 +93,29 @@
             sb.log(kx +  "," + ky);
             if (0 < kx && 0 < ky && kx < 10 && ky < 10) {
                 if (dai.hasKoma(koma)) {
+                    sb.log("rm");
                     dai.removeKoma(koma);
                 }
+
                 if (nari == null) {
                     //DO NOTING
                 } else if ((nari && !koma.isNari) || (!nari && koma.isNari)) {
                     koma.flip();
                 }
                 //apply to view
+
+                var dstKoma = this.board.getKomaAt(kx, ky);
+                if (dstKoma && dstKoma.isReverse != koma.isReverse) {
+                    sb.log("remove dst");
+                    this.board.removeKoma(dstKoma);
+                    dai.putKoma(dstKoma.reverse());
+                }
                 this.board.moveKoma(koma, kx, ky);
                 sb.log("koma move on board");
             } else {
                 sb.log("put on dai/" + isSente);
                 this.board.removeKoma(koma);
-
-               // dai.removeKoma(koma);
                 dai.putKoma(koma);
-                if (koma.isNari) {
-                    koma.flip();
-                }
             }
         }
 

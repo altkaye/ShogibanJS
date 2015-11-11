@@ -94,7 +94,8 @@
             this.canvas.transformCenter();
             var xb = -this.width / 2;
             var yb = -this.height / 2;
-            this.canvas.context.fillStyle = "#F3E2A9";
+            this.canvas.context.fillStyle = this.fill || "#F3E2A9";
+            this.canvas.strokeStyle = this.stroke || "#000000";
 
             this.canvas.beginPath().moveTo(
                 this.width + xb, this.height + yb).lineTo(
